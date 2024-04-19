@@ -69,7 +69,9 @@ func (h *handler) HandlerRenderPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	threadData := ThreatData{}
-	if err := json.NewDecoder(r.Body).Decode(&threadData); err != nil {
+	jsonDec := json.NewDecoder(r.Body)
+	jsonDec.DisallowUnknownFields() // check for garbage values
+	if err := jsonDec.Decode(&threadData); err != nil {
 		writeStatus(w, r, http.StatusBadRequest, "400 Bad Request, Error: "+err.Error())
 		return
 	}
