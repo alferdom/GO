@@ -85,7 +85,7 @@ func (h *handler) HandlerRenderPost(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Decoded JSON %#v", threadData)
 	if err := h.tmpl.Execute(w, threadData); err != nil {
-		writeStatus(w, r, http.StatusConflict, "409 Conflict, Error: "+err.Error())
+		writeStatus(w, r, http.StatusUnprocessableEntity, "422 Unprocessable Entity, Error: "+err.Error())
 		return
 	}
 }

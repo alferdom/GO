@@ -51,10 +51,10 @@ func TestGET(t *testing.T) {
 }
 
 func TestPOST(t *testing.T) {
+	handler := handlers.NewHandler(nil)
 	// TEST 1 POST to wrong address
 	req := httptest.NewRequest(http.MethodPost, "/render/", nil)
 	w := httptest.NewRecorder()
-	handler := handlers.NewHandler(nil)
 	expectedStatusNotOK(t, handler.HandlerRenderPost, w, req, "POST success, expected 400 Bad Request")
 
 	// TEST 2 POST to only GET address
@@ -101,4 +101,9 @@ func TestPOST(t *testing.T) {
 	w = httptest.NewRecorder()
 	expectedStatusOK(t, handler.HandlerRenderPost, w, req, "POST unsuccessful, expected success")
 	isContentTypeEqualHTML(t, w)
+
+	// TEST 6 POST with nil request
+	req = httptest.NewRequest(http.MethodPost, "/render", nil)
+	w = httptest.NewRecorder()
+	expectedStatusNotOK(t, handler.HandlerRenderPost, w, req, "POST success, expected 400 Bad Request")
 }
