@@ -43,10 +43,12 @@ type Handler interface {
 	HandlerRenderPost(w http.ResponseWriter, r *http.Request)
 }
 
+// Init new Handler with template member
 func NewHandler(aTmpl *template.Template) Handler {
 	return &handler{tmpl: aTmpl}
 }
 
+// Init new ServeMux router
 func NewRouter(aHandler Handler) *http.ServeMux {
 	mx := http.NewServeMux()
 	mx.HandleFunc("/", aHandler.HandlerRootGet)
@@ -54,6 +56,9 @@ func NewRouter(aHandler Handler) *http.ServeMux {
 	return mx
 }
 
+// Handle GET request to root "/"
+//
+// Respond with simple HTML web in format `text/html; charset=UTF-8`
 func (h *handler) HandlerRootGet(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" || r.Method != http.MethodGet {
 		writeStatus(w, r, http.StatusBadRequest, "400 Bad Request")
@@ -63,6 +68,9 @@ func (h *handler) HandlerRootGet(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, submitPage)
 }
 
+// Handle POST request to "/render"
+//
+// Decode JSON from request Body and respond HTML temple filled with JSON decoded data
 func (h *handler) HandlerRenderPost(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeStatus(w, r, http.StatusBadRequest, "400 Bad Request")
@@ -82,8 +90,9 @@ func (h *handler) HandlerRenderPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func writeStatus(w http.ResponseWriter, r *http.Request, statusCode int, message string) {
-	w.WriteHeader(statusCode)
-	fmt.Fprint(w, message)
-	log.Println(message, "Request URL:", r.URL, "Method:", r.Method)
+// Write Status to reponse and log for better debug
+func writeStatus(w http.ResponseWriter, r *http.Request, aStatusCode int, aMessage string) {
+	w.WriteHeader(aStatusCode)
+	fmt.Fprint(w, aMessage)
+	log.Println(aMessage, "Request URL:", r.URL, "Method:", r.Method)
 }

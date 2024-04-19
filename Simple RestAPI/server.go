@@ -25,7 +25,7 @@ import (
 // returns tuple of pointers to parsed strings
 func parseArgs() (*string, *string) {
 	flag.Usage = func() {
-		fmt.Println("Flags:")
+		fmt.Println("Supported Flags:")
 		flag.PrintDefaults()
 	}
 	portNumber := flag.Uint64("p", 8000, "Define port number on which server will listen")
@@ -39,8 +39,11 @@ func parseArgs() (*string, *string) {
 	return &portNumStr, templPath
 }
 
-func parseTemplate(templPath *string) *template.Template {
-	tmpl, err := template.ParseFiles(*templPath)
+// Parse HTML Template from file path
+//
+// returns parsed template
+func parseTemplate(aTemplPath *string) *template.Template {
+	tmpl, err := template.ParseFiles(*aTemplPath)
 	if err != nil {
 		log.Fatal("Error parsing template:", err)
 	}
@@ -48,6 +51,9 @@ func parseTemplate(templPath *string) *template.Template {
 	return tmpl
 }
 
+// Start HTTP server on local address with defined portnumber and handlers
+//
+// Server closes gracefully on SIGINT || SIGTERM signals and defers sync.WaitGroup
 func startServer(aPort *string, aHandler *handlers.Handler, aWaitGroup *sync.WaitGroup) {
 	server := &http.Server{Addr: ":" + *aPort, Handler: handlers.NewRouter(*aHandler)}
 	log.Println("Server listening on port", *aPort, "...")
@@ -63,7 +69,7 @@ func startServer(aPort *string, aHandler *handlers.Handler, aWaitGroup *sync.Wai
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	<-sigChan
+	<-sigChan // wait for receiving signal
 	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownRelease()
 	if err := server.Shutdown(shutdownCtx); err != nil {
