@@ -64,7 +64,7 @@ func (h *handler) HandlerRootGet(w http.ResponseWriter, r *http.Request) {
 		writeStatus(w, r, http.StatusBadRequest, "400 Bad Request")
 		return
 	}
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprint(w, submitPage)
 }
 
@@ -78,12 +78,12 @@ func (h *handler) HandlerRenderPost(w http.ResponseWriter, r *http.Request) {
 	}
 	threadData := ThreatData{}
 	jsonDec := json.NewDecoder(r.Body)
-	jsonDec.DisallowUnknownFields() // check for garbage values
+	//jsonDec.DisallowUnknownFields() // uncomment for checking unknown JSON keys
 	if err := jsonDec.Decode(&threadData); err != nil {
 		writeStatus(w, r, http.StatusBadRequest, "400 Bad Request, Error: "+err.Error())
 		return
 	}
-	log.Printf("Decoded JSON %+v", threadData)
+	log.Printf("Decoded JSON %#v", threadData)
 	if err := h.tmpl.Execute(w, threadData); err != nil {
 		writeStatus(w, r, http.StatusConflict, "409 Conflict, Error: "+err.Error())
 		return
