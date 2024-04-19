@@ -10,12 +10,8 @@
             <li>category: {{.Category}}</li>
             <li>size: {{.Size}}</li>
             <li>detectionDate: {{.DetectionDate}}</li>
-            <li>variants:[
-            {{if .Variants}}
-                <br>
-            {{end}}
-            {{range .Variants}}
-                {{.}}<br>
+            <li>variants:[{{if .Variants}}<br>{{end}}
+            {{range .Variants}}{{.}}<br>
             {{end}}]</li>
         </ul>
     </body>
